@@ -93,7 +93,15 @@ namespace FlaUI.Core.Capturing
                 var timeTillNextFrame = timestamp + frameInterval - DateTime.UtcNow;
                 if (timeTillNextFrame > TimeSpan.Zero)
                 {
-                    await Task.Delay(timeTillNextFrame);
+                    if (timeTillNextFrame > TimeSpan.FromSeconds(1))
+                    {
+                        // Happens when the system date is set to an earlier time during recording
+                        await Task.Delay(frameInterval);
+                    }
+                    else
+                    {
+                        await Task.Delay(timeTillNextFrame);
+                    }
                 }
             }
             if (totalMissedFrames > 0 && _settings.LogMissingFrames)
